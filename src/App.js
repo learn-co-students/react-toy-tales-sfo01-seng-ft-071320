@@ -19,6 +19,7 @@ class App extends React.Component{
     id: 0
   }
 
+// fetch the toys
   componentDidMount(){
     const url = `http://localhost:3000/toys`
     fetch(url)
@@ -29,28 +30,40 @@ class App extends React.Component{
     // success
   }
 
-  handleSubmit = (e) => {
-    e.preventDefault()
-    // this.state.addNewToy()
-    e.target.reset()
-  }
-
-
-  handleToyChange= (e) => {
+// handle the toys
+  handleToyChange = (e) => {
     console.log('toyChange',e.target.value)
     this.setState({
       [e.target.name]: e.target.value
     })
   }
 
+  handleSubmit = (e) => {
+    console.log('did i submit a post?')
+    e.preventDefault()
 
-  addNewToy = (toy) =>{
-    this.setState({
-     toys: [...this.state.toys, toy]
+    let toy = {
+      name: this.state.name,
+      image: this.state.image,
+      likes: 0,
+    }
+    fetch(`http://localhost:3000/toys`,{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      }, 
+      body:JSON.stringify(toy)
     })
+    .then(res => res.json())
+    .then(toy => {
+      this.setState((prevState) => {
+        return { 
+          toys: [...prevState.toys, toy]
+        }})
+    })
+    e.target.reset()
   }
-
- 
 
   handleClick = () => {
     let newBoolean = !this.state.display
@@ -59,6 +72,7 @@ class App extends React.Component{
     })
   }
 
+
   render(){
     return (
       <>
@@ -66,11 +80,11 @@ class App extends React.Component{
         { this.state.display
             ?
           <ToyForm 
-          submit={(e) => this.handleSubmit(e)}
+          submit={this.handleSubmit}
           toyChange={this.handleToyChange}
-          addToy={this.addNewToy}
+          name={this.state.name}
+          image={this.state.image}
           />
-          // toy form info here
             :
           null
         }
