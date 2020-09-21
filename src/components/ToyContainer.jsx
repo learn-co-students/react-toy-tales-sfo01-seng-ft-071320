@@ -2,11 +2,13 @@ import React from 'react';
 import ToyCard from './ToyCard'
 
 const ToyContainer = (props) => { 
+
+  // const {toyDelete} = this.props
   // always pass in props as an argument when its a functional component
   return(
     <div id="toy-collection">
       { props.toys.map(toy => (
-        <ToyCard key={toy.id} toy={toy}/>
+        <ToyCard key={toy.id} toy={toy} onDelete={props.onDelete} onUpdateLikes={props.onUpdateLikes} />
       )) }
     </div>
   );

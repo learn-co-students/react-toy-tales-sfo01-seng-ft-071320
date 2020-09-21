@@ -13,10 +13,11 @@ class App extends React.Component{
   state = {
     display: false,
     toys: [],
+    id: 0,
     name: "",
     image: "",
     likes: 0,
-    id: 0
+ 
   }
 
 // fetch the toys
@@ -29,6 +30,7 @@ class App extends React.Component{
     }))
     // success
   }
+
 
 // handle the toys
   handleToyChange = (e) => {
@@ -72,6 +74,41 @@ class App extends React.Component{
     })
   }
 
+  handleDelete = (toyId) => {
+    fetch(`http://localhost:3000/toys/${toyId}`,{
+      method: "Delete",
+    })
+    .then(res => {
+    const deletedToy = this.state.toys.filter(toy => toy.id !== toyId)
+    this.setState({ toys: deletedToy });
+  }
+    )}
+
+    handleLikes = (toy) => {
+console.log(toy)
+
+      let updateLikes = {
+        likes: parseInt(toy.likes) + 1 
+      }
+
+      fetch(`http://localhost:3000/toys/${toy.id}`,{
+        method: "PATCH",
+        headers:{
+          "Content-Type" : "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(updateLikes)
+      })
+      .then(res => res.json())
+      .then(json => {
+        console.log(json)
+        const likeToy = this.state.toys.filter(toy => toy.id !== json.id)
+        likeToy.push(json)
+        console.log(likeToy)
+        this.setState({toys: likeToy}) //all the toys with our new updated toy
+          // console.log('hello from handleLikes')
+      })}
+
 
   render(){
     return (
@@ -91,7 +128,11 @@ class App extends React.Component{
         <div className="buttonContainer">
           <button onClick={this.handleClick}> Add a Toy </button>
         </div>
-        <ToyContainer toys={this.state.toys}/>
+        <ToyContainer 
+        toys={this.state.toys}
+        onDelete={this.handleDelete}
+        onUpdateLikes={this.handleLikes}
+        />
       </>
     );
   }
